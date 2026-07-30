@@ -82,7 +82,7 @@ export default function App() {
 
   function badgeFor(tabId) {
     if (tabId === 'vehicle' && (expired(data.vehicle.registrationExpiry) || expiringSoon(data.vehicle.registrationExpiry))) return true;
-    if (tabId === 'insurance' && (expired(data.insurance.expiryDate) || expiringSoon(data.insurance.expiryDate))) return true;
+    if (tabId === 'insurance' && [data.insurance.expiryDate, data.ctp.expiryDate].some((d) => expired(d) || expiringSoon(d))) return true;
     if (tabId === 'owner' && (expired(data.owner.licenseExpiry) || expiringSoon(data.owner.licenseExpiry))) return true;
     return false;
   }
@@ -158,14 +158,14 @@ export default function App() {
         {tab === 'police' && (
           <div>
             <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 mb-4 text-amber-800 text-sm no-print">
-              <strong>Police Check Mode</strong> — Show this screen to law enforcement. All data is stored locally on this device only.
+              <strong>Police Check Mode</strong> — Show this screen to law enforcement. Edits you make are saved to this device; the starting details are built into the site.
             </div>
             <PoliceView data={data} />
           </div>
         )}
         {tab === 'owner' && <OwnerForm data={data.owner} onChange={handleChange} onSave={handleSave} />}
         {tab === 'vehicle' && <VehicleForm data={data.vehicle} onChange={handleChange} onSave={handleSave} />}
-        {tab === 'insurance' && <InsuranceForm data={data.insurance} onChange={handleChange} onSave={handleSave} />}
+        {tab === 'insurance' && <InsuranceForm data={data.insurance} ctp={data.ctp} onChange={handleChange} onSave={handleSave} />}
         {tab === 'service' && <ServiceForm data={data.service} onChange={handleChange} onSave={handleSave} />}
         {tab === 'medical' && <MedicalForm data={data.medical} onChange={handleChange} onSave={handleSave} />}
       </main>

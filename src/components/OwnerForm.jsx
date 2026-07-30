@@ -54,6 +54,8 @@ export default function OwnerForm({ data, onChange, onSave }) {
           <Field label="Email" type="email" value={data.email} onChange={(v) => handle('email', v)} placeholder="john@example.com" />
           <Field label="Driver Licence Number" value={data.licenseNumber} onChange={(v) => handle('licenseNumber', v)} placeholder="12345678" />
           <Field label="Licence Expiry Date" type="date" value={data.licenseExpiry} onChange={(v) => handle('licenseExpiry', v)} />
+          <Field label="Licence Class" value={data.licenseClass} onChange={(v) => handle('licenseClass', v)} placeholder="C" />
+          <Field label="Licence Conditions" value={data.licenseConditions} onChange={(v) => handle('licenseConditions', v)} placeholder="None" />
           <Field label="Residential Address" value={data.address} onChange={(v) => handle('address', v)} placeholder="123 Main St, City, State 0000" className="sm:col-span-2" />
         </div>
       </div>

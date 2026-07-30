@@ -93,9 +93,31 @@ have it cached.
 
 ## Where your data lives
 
-Form data is kept in `localStorage` and uploaded documents in IndexedDB — both
-on your device only. There is no server and no account. Clearing your browser's
-site data erases everything, so keep the PDFs somewhere else too.
+Starting details are hardcoded in [`src/config/profile.js`](src/config/profile.js)
+and ship with the site. Any edits you make in the app are saved to
+`localStorage`, and documents uploaded via the app's **Upload** button go to
+IndexedDB — those two stay on your device. There is no server and no account.
+
+### Removing the hardcoded details
+
+Blanking the values in `src/config/profile.js` clears them from the live site,
+but **not** from git history — every past commit still contains them. To remove
+them properly:
+
+```bash
+# rewrite history, then force-push
+git filter-repo --path src/config/profile.js --invert-paths
+```
+
+Anyone who cloned or viewed the repo before that still has the data, and GitHub
+caches views for a while. If the details are sensitive, changing the licence is
+the only true remedy — treat publication as permanent.
+
+### Keeping the site private
+
+GitHub Pages is public even for private repos. To put the app behind a login,
+deploy to Cloudflare Pages with Cloudflare Access, or Netlify with password
+protection, instead of GitHub Pages.
 
 ## Development
 

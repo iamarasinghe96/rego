@@ -6,12 +6,6 @@ const DB_NAME = 'vehicleVault';
 const STORE = 'documents';
 const VERSION = 1;
 
-export const DOC_KEYS = {
-  registration: 'Registration Papers',
-  insurance: 'Insurance Certificate',
-  roadworthy: 'Roadworthy / Safety Certificate',
-};
-
 function openDB() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, VERSION);

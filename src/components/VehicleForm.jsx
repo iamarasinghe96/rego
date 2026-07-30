@@ -64,6 +64,11 @@ export default function VehicleForm({ data, onChange, onSave }) {
           <Field label="Colour" value={data.color} onChange={(v) => handle('color', v)} placeholder="Silver" />
           <Field label="VIN (Chassis Number)" value={data.vin} onChange={(v) => handle('vin', v)} placeholder="1HGBH41JXMN109186" className="sm:col-span-2" />
           <Field label="Engine Number" value={data.engineNumber} onChange={(v) => handle('engineNumber', v)} placeholder="ENG-00000" />
+          <Field label="Engine Capacity" value={data.engineCapacity} onChange={(v) => handle('engineCapacity', v)} placeholder="1498 cc (1.5L)" />
+          <Field label="Seating Capacity" value={data.seatingCapacity} onChange={(v) => handle('seatingCapacity', v)} placeholder="5" />
+          <Field label="Registered Operator" value={data.registeredOperator} onChange={(v) => handle('registeredOperator', v)} placeholder="If not you" />
+          <Field label="Customer Number" value={data.customerNumber} onChange={(v) => handle('customerNumber', v)} placeholder="00000000" />
+          <Field label="Garaged Address" value={data.garagedAt} onChange={(v) => handle('garagedAt', v)} placeholder="Suburb, State, Postcode" className="sm:col-span-2" />
         </div>
       </div>
 
