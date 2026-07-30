@@ -18,14 +18,6 @@ export const DOC_SLOTS = [
     accent: 'green',
   },
   {
-    id: 'insurance',
-    section: 'insurance',
-    label: 'Certificate of Currency',
-    file: 'insurance.pdf',
-    hint: 'Insurance certificate or policy schedule',
-    accent: 'purple',
-  },
-  {
     id: 'ctp',
     section: 'insurance',
     label: 'CTP / Green Slip',

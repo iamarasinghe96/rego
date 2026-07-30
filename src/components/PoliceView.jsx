@@ -1,4 +1,4 @@
-import { Shield, Car, FileCheck, AlertCircle, Phone, User, ShieldCheck } from 'lucide-react';
+import { Shield, Car, AlertCircle, Phone, User, ShieldCheck } from 'lucide-react';
 import DocumentLinks from './DocumentLinks';
 import LicenceButton from './LicenceButton';
 import { DOC_SLOTS } from '../config/documents';
@@ -15,7 +15,7 @@ function Row({ label, value }) {
 }
 
 export default function PoliceView({ data }) {
-  const { owner, vehicle, insurance, ctp, medical } = data;
+  const { owner, vehicle, ctp, medical } = data;
   const now = new Date().toLocaleString('en-AU', { dateStyle: 'full', timeStyle: 'short' });
 
   const hasMedical =
@@ -116,23 +116,6 @@ export default function PoliceView({ data }) {
             <Row label="Insured" value={ctp.insuredName} />
             <Row label="Cover Period" value={ctp.startDate && `${formatDate(ctp.startDate)} – ${formatDate(ctp.expiryDate)}`} />
             <Row label="Injury Claims" value={ctp.assistNumber} />
-          </div>
-        </section>
-      )}
-
-      {/* Comprehensive insurance */}
-      {insurance.provider && (
-        <section className="bg-white rounded-2xl shadow overflow-hidden">
-          <div className="bg-gray-800 text-white px-4 py-2 flex items-center gap-2">
-            <FileCheck className="w-4 h-4" />
-            <span className="font-semibold text-sm tracking-wide uppercase">Vehicle Insurance</span>
-          </div>
-          <div className="p-4">
-            <Row label="Provider" value={insurance.provider} />
-            <Row label="Policy No." value={insurance.policyNumber} />
-            <Row label="Coverage" value={insurance.coverageType} />
-            <Row label="Valid Until" value={formatDate(insurance.expiryDate)} />
-            <Row label="Claims Line" value={insurance.claimsNumber} />
           </div>
         </section>
       )}

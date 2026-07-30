@@ -62,19 +62,6 @@ export const PROFILE = {
     contactNumber: '13 1000',
   },
 
-  // Comprehensive cover — the CTP certificate notes one exists on this
-  // vehicle, but no policy document was provided.
-  insurance: {
-    provider: '',
-    policyNumber: '',
-    policyHolder: '',
-    startDate: '',
-    expiryDate: '',
-    coverageType: 'Comprehensive',
-    contactNumber: '',
-    claimsNumber: '',
-  },
-
   service: [],
 
   medical: {

@@ -73,7 +73,7 @@ export default function App() {
 
   function badgeFor(tabId) {
     if (tabId === 'vehicle') return needsAttention(PROFILE.vehicle.registrationExpiry);
-    if (tabId === 'insurance') return [PROFILE.ctp.expiryDate, PROFILE.insurance.expiryDate].some(needsAttention);
+    if (tabId === 'insurance') return needsAttention(PROFILE.ctp.expiryDate);
     if (tabId === 'owner') return needsAttention(PROFILE.owner.licenseExpiry);
     return false;
   }
@@ -149,7 +149,7 @@ export default function App() {
         {tab === 'police' && <PoliceView data={{ ...PROFILE, service }} />}
         {tab === 'owner' && <OwnerView data={PROFILE.owner} />}
         {tab === 'vehicle' && <VehicleView data={PROFILE.vehicle} />}
-        {tab === 'insurance' && <InsuranceView data={PROFILE.insurance} ctp={PROFILE.ctp} />}
+        {tab === 'insurance' && <InsuranceView ctp={PROFILE.ctp} />}
         {tab === 'service' && <ServiceForm data={service} onChange={handleServiceChange} />}
         {tab === 'medical' && <MedicalView data={PROFILE.medical} />}
       </main>
