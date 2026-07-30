@@ -149,11 +149,73 @@ Anyone who cloned or viewed the repo before that still has the data, and GitHub
 caches views for a while. If the details are sensitive, changing the licence is
 the only true remedy — treat publication as permanent.
 
-### Keeping the site private
+## Locking the site down
 
-GitHub Pages is public even for private repos. To put the app behind a login,
-deploy to Cloudflare Pages with Cloudflare Access, or Netlify with password
-protection, instead of GitHub Pages.
+GitHub Pages has no access control — it is public even when the repo is
+private. To gate the app, move it to Vercel and let edge middleware
+authenticate every request.
+
+**Order matters.** Gating Vercel achieves nothing while the public copies are
+still up, so do these in sequence:
+
+### 1. Take down the public copies first
+
+- **Settings → Pages → Source → None.** This unpublishes
+  `iamarasinghe96.github.io/rego/`.
+- **Settings → General → Danger Zone → Change visibility → Private.**
+- Delete `.github/workflows/deploy.yml` so Pages isn't republished.
+
+### 2. Purge the details from git history
+
+Making the repo private hides history from the public, but every past commit
+still contains the profile and the PDFs. If you want them gone outright:
+
+```bash
+pip install git-filter-repo
+git filter-repo --path src/config/profile.js --path public/documents --invert-paths --force
+git push --force
+```
+
+### 3. Deploy to Vercel behind a password
+
+1. [vercel.com/new](https://vercel.com/new) → import the repo. The Vite preset
+   and `vercel.json` are picked up automatically.
+2. **Settings → Environment Variables**, for Production *and* Preview:
+
+   | Name            | Value                       |
+   | --------------- | --------------------------- |
+   | `SITE_USER`     | any username                |
+   | `SITE_PASSWORD` | a long random passphrase    |
+
+3. Redeploy. `middleware.js` now challenges every request.
+
+### 4. Verify the gate actually holds
+
+The test that matters is the PDF, not the homepage — a gate that misses static
+files leaks the documents directly:
+
+```bash
+curl -o /dev/null -w '%{http_code}\n' https://<your-app>.vercel.app/                      # 401
+curl -o /dev/null -w '%{http_code}\n' https://<your-app>.vercel.app/documents/ctp.pdf     # 401
+curl -o /dev/null -w '%{http_code}\n' -u user:pass https://<your-app>.vercel.app/         # 200
+```
+
+Three 401s before credentials and a 200 after means the gate covers the whole
+site. Anything returning 200 unauthenticated is a leak.
+
+### What this does and doesn't do
+
+The middleware runs before any file is served, so the JS bundle holding your
+details is never sent to an unauthenticated visitor. It does **not** retroactively
+protect anything already published — treat data that was public as compromised.
+
+Alternatives, both stronger on identity:
+
+- **Vercel Password Protection** (Pro, $20/mo) — same thing without the
+  middleware, configured in the dashboard.
+- **Cloudflare Access** (free up to 50 users) — real per-person login by email
+  code or Google, revocable, with an audit log. Better if more than one person
+  needs access.
 
 ## Development
 
