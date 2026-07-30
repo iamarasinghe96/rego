@@ -1,5 +1,7 @@
 import { FileCheck, ShieldCheck } from 'lucide-react';
 import DetailCard, { Detail } from './ui/DetailCard';
+import DocumentLinks from './DocumentLinks';
+import { slotsFor } from '../config/documents';
 import { formatDate, daysUntil, isExpired } from '../utils/format';
 
 function ExpiryNotice({ label, date }) {
@@ -73,6 +75,8 @@ export default function InsuranceView({ data, ctp }) {
           </p>
         )}
       </DetailCard>
+
+      <DocumentLinks slots={slotsFor('insurance')} iconClass="bg-purple-100 text-purple-700" />
     </div>
   );
 }

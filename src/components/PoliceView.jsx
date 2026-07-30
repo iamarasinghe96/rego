@@ -1,6 +1,7 @@
 import { Shield, Car, FileCheck, AlertCircle, Phone, User, ShieldCheck } from 'lucide-react';
-import PoliceDocs from './PoliceDocs';
+import DocumentLinks from './DocumentLinks';
 import LicenceButton from './LicenceButton';
+import { DOC_SLOTS } from '../config/documents';
 import { formatDate } from '../utils/format';
 
 function Row({ label, value }) {
@@ -137,7 +138,7 @@ export default function PoliceView({ data }) {
       )}
 
       {/* Documents */}
-      <PoliceDocs />
+      <DocumentLinks slots={DOC_SLOTS} variant="police" />
 
       {/* Medical */}
       {hasMedical && (
