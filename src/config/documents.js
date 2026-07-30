@@ -1,44 +1,39 @@
-// Documents committed to the repo live in public/documents/ and are deployed
-// with the site. Filenames are fixed so the app can find them without any
-// backend — drop a file with the matching name and it appears automatically.
-//
-// NOTE: anything in public/ is published with the site and is publicly
-// readable by anyone who has the URL. Use the on-device upload instead for
-// anything you do not want exposed.
+import registrationPdf from '../documents/registration.pdf';
+import ctpPdf from '../documents/ctp.pdf';
 
-const BASE = import.meta.env.BASE_URL || './';
+// The PDFs are inlined into the build as base64 data URIs. Safari refuses to
+// navigate to a top-level data: URL, so each one is turned into a blob URL
+// once at startup — that both works and keeps the tap synchronous, which
+// matters because iOS blocks link opens that happen after an await.
+function toBlobUrl(source) {
+  if (typeof source !== 'string' || !source.startsWith('data:')) return source;
+  try {
+    const [meta, base64] = source.split(',');
+    const mime = meta.match(/:(.*?);/)?.[1] || 'application/pdf';
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return URL.createObjectURL(new Blob([bytes], { type: mime }));
+  } catch {
+    return source;
+  }
+}
 
 export const DOC_SLOTS = [
   {
     id: 'registration',
     section: 'vehicle',
     label: 'Registration Papers',
-    file: 'registration.pdf',
-    hint: 'Certificate of registration / renewal notice',
-    accent: 'green',
+    url: toBlobUrl(registrationPdf),
   },
   {
     id: 'ctp',
     section: 'insurance',
     label: 'CTP / Green Slip',
-    file: 'ctp.pdf',
-    hint: 'Compulsory third party certificate',
-    accent: 'purple',
-  },
-  {
-    id: 'roadworthy',
-    section: 'vehicle',
-    label: 'Safety / Roadworthy Certificate',
-    file: 'roadworthy.pdf',
-    hint: 'Pink slip or safety inspection report',
-    accent: 'green',
+    url: toBlobUrl(ctpPdf),
   },
 ];
 
 export function slotsFor(section) {
   return DOC_SLOTS.filter((s) => s.section === section);
-}
-
-export function repoDocUrl(file) {
-  return `${BASE}documents/${file}`;
 }

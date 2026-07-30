@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Wrench, Plus, Trash2 } from 'lucide-react';
+import { Wrench, Plus, Trash2, Info } from 'lucide-react';
 import Field from './ui/Field';
 import { formatDate } from '../utils/format';
+import { isStorageAvailable } from '../utils/storage';
 
 const SERVICE_TYPES = [
   'Oil & Filter Change', 'Tyre Rotation', 'Brake Service', 'Transmission Service',
@@ -16,6 +17,7 @@ function empty() {
 export default function ServiceForm({ data, onChange }) {
   const [showForm, setShowForm] = useState(false);
   const [record, setRecord] = useState(empty());
+  const [persists] = useState(isStorageAvailable);
 
   function handle(field, value) {
     setRecord((r) => ({ ...r, [field]: value }));
@@ -37,6 +39,16 @@ export default function ServiceForm({ data, onChange }) {
 
   return (
     <div className="space-y-5">
+      {!persists && (
+        <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 text-amber-800 text-sm flex items-start gap-2">
+          <Info className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>
+            This device won’t save between openings — records you add stay only until you close the
+            app. Opening it from Safari instead of the Files preview fixes this.
+          </span>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl shadow p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
