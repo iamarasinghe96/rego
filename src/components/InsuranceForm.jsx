@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { FileCheck } from 'lucide-react';
+import { FileCheck, FolderOpen } from 'lucide-react';
 import Field from './ui/Field';
 import SelectField from './ui/SelectField';
 import SaveButton from './ui/SaveButton';
+import DocumentSlot from './ui/DocumentSlot';
+import { slotsFor } from '../config/documents';
 
 const COVERAGE_TYPES = ['CTP (Compulsory Third Party)', 'Third Party Property', 'Third Party Fire & Theft', 'Comprehensive'];
 
@@ -54,6 +56,17 @@ export default function InsuranceForm({ data, onChange, onSave }) {
           <Field label="24/7 Claims Number" type="tel" value={data.claimsNumber} onChange={(v) => handle('claimsNumber', v)} placeholder="132 132" />
         </div>
       </div>
+
+      <div className="bg-white rounded-2xl shadow p-5">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="bg-purple-100 p-2 rounded-xl"><FolderOpen className="w-5 h-5 text-purple-700" /></div>
+          <h2 className="text-lg font-bold text-gray-800">Documents</h2>
+        </div>
+        <div className="space-y-3">
+          {slotsFor('insurance').map((slot) => <DocumentSlot key={slot.id} slot={slot} />)}
+        </div>
+      </div>
+
       <SaveButton saved={saved} onClick={save} />
     </div>
   );

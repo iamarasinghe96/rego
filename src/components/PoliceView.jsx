@@ -1,4 +1,5 @@
-import { Shield, Car, FileCheck, AlertCircle, Phone, User, Calendar, Hash } from 'lucide-react';
+import { Shield, Car, FileCheck, AlertCircle, Phone, User } from 'lucide-react';
+import PoliceDocs from './PoliceDocs';
 
 function StatusBadge({ valid, label }) {
   const ok = valid && new Date(valid) >= new Date();
@@ -103,6 +104,9 @@ export default function PoliceView({ data }) {
           <Row label="Contact" value={insurance.contactNumber} />
         </div>
       </section>
+
+      {/* Documents */}
+      <PoliceDocs />
 
       {/* Medical */}
       {(medical.bloodType || medical.allergies || medical.conditions || medical.emergencyContact || (medical.medications && medical.medications.length > 0)) && (

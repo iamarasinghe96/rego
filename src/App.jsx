@@ -38,14 +38,36 @@ function expired(dateStr) {
   return dateStr && new Date(dateStr) < new Date();
 }
 
+const VALID_TABS = TABS.map((t) => t.id);
+
+function tabFromHash() {
+  const id = window.location.hash.replace('#', '');
+  return VALID_TABS.includes(id) ? id : 'police';
+}
+
 export default function App() {
-  const [tab, setTab] = useState('police');
+  // Siri Shortcuts open a URL like .../#police, so the hash picks the screen.
+  const [tab, setTab] = useState(tabFromHash);
   const [data, setData] = useState(loadData);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'VehicleVault';
   }, []);
+
+  // Respond to the hash changing while the app is already open — iOS reuses
+  // an existing tab when a Shortcut fires a second time.
+  useEffect(() => {
+    const onHashChange = () => setTab(tabFromHash());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  useEffect(() => {
+    if (window.location.hash.replace('#', '') !== tab) {
+      window.history.replaceState(null, '', `#${tab}`);
+    }
+  }, [tab]);
 
   const handleChange = useCallback((section, value) => {
     setData((prev) => ({ ...prev, [section]: value }));

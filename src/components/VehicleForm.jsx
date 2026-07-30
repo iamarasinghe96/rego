@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Car, Upload } from 'lucide-react';
+import { Car, Upload, FolderOpen } from 'lucide-react';
 import Field from './ui/Field';
 import SelectField from './ui/SelectField';
 import SaveButton from './ui/SaveButton';
+import DocumentSlot from './ui/DocumentSlot';
+import { slotsFor } from '../config/documents';
 
 const VEHICLE_TYPES = ['Sedan', 'SUV', 'Hatchback', 'Wagon', 'Ute', 'Van', 'Motorcycle', 'Truck', 'Bus', 'Other'];
 const STATES = ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA'];
@@ -64,6 +66,17 @@ export default function VehicleForm({ data, onChange, onSave }) {
           <Field label="Engine Number" value={data.engineNumber} onChange={(v) => handle('engineNumber', v)} placeholder="ENG-00000" />
         </div>
       </div>
+
+      <div className="bg-white rounded-2xl shadow p-5">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="bg-green-100 p-2 rounded-xl"><FolderOpen className="w-5 h-5 text-green-700" /></div>
+          <h2 className="text-lg font-bold text-gray-800">Documents</h2>
+        </div>
+        <div className="space-y-3">
+          {slotsFor('vehicle').map((slot) => <DocumentSlot key={slot.id} slot={slot} />)}
+        </div>
+      </div>
+
       <SaveButton saved={saved} onClick={save} />
     </div>
   );
