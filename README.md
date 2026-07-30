@@ -10,14 +10,15 @@ Live at: `https://iamarasinghe96.github.io/rego/`
 
 | Tab              | Contents                                                                        |
 | ---------------- | ------------------------------------------------------------------------------- |
-| **Police Check** | Read-only summary with VALID/EXPIRED badges, documents, and medical information |
-| **Owner**        | Name, DOB, licence number and expiry, address, photo                            |
-| **Vehicle**      | Rego number, state, expiry, make/model/year/colour, VIN, engine number          |
-| **Insurance**    | Provider, policy number, coverage, dates, claims line                           |
-| **Service**      | Service history with odometer, workshop, cost, and next-service tracking        |
-| **Medical**      | Blood type, allergies, conditions, medications, and medical certificates        |
+| **Police Check** | Everything an officer needs on one screen — driver, vehicle, CTP, documents |
+| **Owner**        | Name, DOB, licence number, class, conditions, expiry, address, photo         |
+| **Vehicle**      | Rego, state, expiry, registered operator, make/model/year, VIN, engine        |
+| **Insurance**    | CTP green slip and comprehensive policy details                               |
+| **Service**      | Service history with odometer, workshop, cost, and next-service tracking      |
+| **Medical**      | Blood type, allergies, conditions, medications, and medical certificates      |
 
-Expiring or expired documents raise an amber dot on the relevant tab.
+Every tab is read-only except **Service**. Expiring or expired documents raise
+an amber dot on the relevant tab.
 
 ## Adding registration & insurance PDFs
 
@@ -38,16 +39,14 @@ git commit -m "Add registration document"
 git push
 ```
 
+Committed documents are linked from the Police Check screen. The section stays
+hidden until at least one file exists.
+
 > ⚠️ **These files become public.** Anything in `public/` is deployed with the
 > site and readable by anyone with the URL, and this repo is public so the file
 > is also visible on GitHub — permanently, since git keeps history even after a
 > delete. Registration and insurance documents contain your full name, address,
 > licence number and VIN.
->
-> The alternative is the **Upload** button inside the app. Those files are
-> stored in your browser's IndexedDB on that one device and never leave it —
-> nothing is uploaded anywhere. The tradeoff is they don't sync between devices
-> and are lost if you clear site data.
 
 ## Opening it with Siri
 
@@ -91,12 +90,22 @@ A service worker caches the app and any documents you've opened, so the Police
 Check screen still works with no signal. Open each document once while online to
 have it cached.
 
+## Editing your details
+
+Everything except the service log is hardcoded in
+[`src/config/profile.js`](src/config/profile.js) — driver, vehicle, CTP,
+insurance and medical. The app displays it read-only; to change a detail, edit
+that file and push. The deploy workflow rebuilds the site automatically.
+
+The **Service** tab is the one exception: records are added in the app and
+saved to `localStorage` on that device, so logging a service doesn't require a
+commit. They don't sync between devices and are cleared with site data.
+
 ## Where your data lives
 
-Starting details are hardcoded in [`src/config/profile.js`](src/config/profile.js)
-and ship with the site. Any edits you make in the app are saved to
-`localStorage`, and documents uploaded via the app's **Upload** button go to
-IndexedDB — those two stay on your device. There is no server and no account.
+The hardcoded profile ships inside the site's JavaScript bundle. Service
+records live in `localStorage` on your device. There is no server and no
+account.
 
 ### Removing the hardcoded details
 

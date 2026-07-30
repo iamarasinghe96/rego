@@ -1,16 +1,6 @@
 import { Shield, Car, FileCheck, AlertCircle, Phone, User, ShieldCheck } from 'lucide-react';
 import PoliceDocs from './PoliceDocs';
-import { formatDate, isExpired } from '../utils/format';
-
-function StatusBadge({ date, label }) {
-  const ok = date && !isExpired(date);
-  return (
-    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold ${ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-      <span className={`w-2 h-2 rounded-full ${ok ? 'bg-green-500' : 'bg-red-500'}`} />
-      {label}: {ok ? 'VALID' : date ? 'EXPIRED' : 'NOT SET'}
-    </span>
-  );
-}
+import { formatDate } from '../utils/format';
 
 function Row({ label, value }) {
   if (!value) return null;
@@ -49,13 +39,6 @@ export default function PoliceView({ data }) {
           <p className="text-blue-300 text-sm">For law enforcement &amp; official use</p>
           <p className="text-blue-400 text-xs mt-1">{now}</p>
         </div>
-      </div>
-
-      {/* Status banners */}
-      <div className="bg-white rounded-2xl p-4 shadow flex flex-wrap gap-2">
-        <StatusBadge date={vehicle.registrationExpiry} label="Registration" />
-        <StatusBadge date={ctp.expiryDate} label="CTP" />
-        <StatusBadge date={owner.licenseExpiry} label="Licence" />
       </div>
 
       {/* Owner */}

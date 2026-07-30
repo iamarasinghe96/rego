@@ -10,6 +10,8 @@
 // 0458634981), Allianz CTP Green Slip (policy 7555568760TP).
 // ---------------------------------------------------------------------------
 
+import ownerPhoto from '../assets/owner.jpg';
+
 export const PROFILE = {
   owner: {
     fullName: 'Lokunekathige Indika Deshapriya Amarasinghe',
@@ -21,7 +23,7 @@ export const PROFILE = {
     address: 'Unit 7, 634 Loma Pl, Albury NSW 2640',
     phone: '',
     email: '',
-    photo: '',
+    photo: ownerPhoto,
   },
 
   vehicle: {

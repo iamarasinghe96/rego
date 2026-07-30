@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Shield, User, Car, FileCheck, Wrench, Heart, Menu, X } from 'lucide-react';
-import { loadData, saveData } from './utils/storage';
+import { PROFILE } from './config/profile';
+import { loadService, saveService } from './utils/storage';
+import { daysUntil, isExpired } from './utils/format';
 import PoliceView from './components/PoliceView';
-import OwnerForm from './components/OwnerForm';
-import VehicleForm from './components/VehicleForm';
-import InsuranceForm from './components/InsuranceForm';
+import OwnerView from './components/OwnerView';
+import VehicleView from './components/VehicleView';
+import InsuranceView from './components/InsuranceView';
 import ServiceForm from './components/ServiceForm';
-import MedicalForm from './components/MedicalForm';
+import MedicalView from './components/MedicalView';
 import './index.css';
 
 const TABS = [
@@ -27,17 +29,6 @@ const COLOR_MAP = {
   red: { active: 'bg-red-700 text-white', icon: 'text-red-700' },
 };
 
-function expiringSoon(dateStr, days = 30) {
-  if (!dateStr) return false;
-  const d = new Date(dateStr);
-  const diff = (d - new Date()) / 86400000;
-  return diff >= 0 && diff <= days;
-}
-
-function expired(dateStr) {
-  return dateStr && new Date(dateStr) < new Date();
-}
-
 const VALID_TABS = TABS.map((t) => t.id);
 
 function tabFromHash() {
@@ -45,10 +36,16 @@ function tabFromHash() {
   return VALID_TABS.includes(id) ? id : 'police';
 }
 
+function needsAttention(date) {
+  if (!date) return false;
+  const days = daysUntil(date);
+  return isExpired(date) || (days !== null && days <= 30);
+}
+
 export default function App() {
   // Siri Shortcuts open a URL like .../#police, so the hash picks the screen.
   const [tab, setTab] = useState(tabFromHash);
-  const [data, setData] = useState(loadData);
+  const [service, setService] = useState(loadService);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -69,21 +66,15 @@ export default function App() {
     }
   }, [tab]);
 
-  const handleChange = useCallback((section, value) => {
-    setData((prev) => ({ ...prev, [section]: value }));
-  }, []);
-
-  const handleSave = useCallback(() => {
-    setData((prev) => {
-      saveData(prev);
-      return prev;
-    });
+  const handleServiceChange = useCallback((records) => {
+    setService(records);
+    saveService(records);
   }, []);
 
   function badgeFor(tabId) {
-    if (tabId === 'vehicle' && (expired(data.vehicle.registrationExpiry) || expiringSoon(data.vehicle.registrationExpiry))) return true;
-    if (tabId === 'insurance' && [data.insurance.expiryDate, data.ctp.expiryDate].some((d) => expired(d) || expiringSoon(d))) return true;
-    if (tabId === 'owner' && (expired(data.owner.licenseExpiry) || expiringSoon(data.owner.licenseExpiry))) return true;
+    if (tabId === 'vehicle') return needsAttention(PROFILE.vehicle.registrationExpiry);
+    if (tabId === 'insurance') return [PROFILE.ctp.expiryDate, PROFILE.insurance.expiryDate].some(needsAttention);
+    if (tabId === 'owner') return needsAttention(PROFILE.owner.licenseExpiry);
     return false;
   }
 
@@ -155,19 +146,12 @@ export default function App() {
 
       {/* Content */}
       <main className="flex-1 p-4 pb-24 md:pb-8 max-w-2xl mx-auto w-full">
-        {tab === 'police' && (
-          <div>
-            <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 mb-4 text-amber-800 text-sm no-print">
-              <strong>Police Check Mode</strong> — Show this screen to law enforcement. Edits you make are saved to this device; the starting details are built into the site.
-            </div>
-            <PoliceView data={data} />
-          </div>
-        )}
-        {tab === 'owner' && <OwnerForm data={data.owner} onChange={handleChange} onSave={handleSave} />}
-        {tab === 'vehicle' && <VehicleForm data={data.vehicle} onChange={handleChange} onSave={handleSave} />}
-        {tab === 'insurance' && <InsuranceForm data={data.insurance} ctp={data.ctp} onChange={handleChange} onSave={handleSave} />}
-        {tab === 'service' && <ServiceForm data={data.service} onChange={handleChange} onSave={handleSave} />}
-        {tab === 'medical' && <MedicalForm data={data.medical} onChange={handleChange} onSave={handleSave} />}
+        {tab === 'police' && <PoliceView data={{ ...PROFILE, service }} />}
+        {tab === 'owner' && <OwnerView data={PROFILE.owner} />}
+        {tab === 'vehicle' && <VehicleView data={PROFILE.vehicle} />}
+        {tab === 'insurance' && <InsuranceView data={PROFILE.insurance} ctp={PROFILE.ctp} />}
+        {tab === 'service' && <ServiceForm data={service} onChange={handleServiceChange} />}
+        {tab === 'medical' && <MedicalView data={PROFILE.medical} />}
       </main>
     </div>
   );

@@ -1,20 +1,19 @@
 import { useState } from 'react';
 import { Wrench, Plus, Trash2 } from 'lucide-react';
 import Field from './ui/Field';
-import SaveButton from './ui/SaveButton';
+import { formatDate } from '../utils/format';
 
 const SERVICE_TYPES = [
   'Oil & Filter Change', 'Tyre Rotation', 'Brake Service', 'Transmission Service',
   'Coolant Flush', 'Air Filter', 'Spark Plugs', 'Battery Replacement',
-  'Wheel Alignment', 'Full Service', 'Roadworthy Check', 'Other',
+  'Wheel Alignment', 'Full Service', 'Pink Slip / Safety Inspection', 'Other',
 ];
 
 function empty() {
-  return { id: Date.now(), date: '', odometer: '', type: 'Oil & Filter Change', workshop: '', cost: '', notes: '', nextDue: '', nextOdo: '' };
+  return { date: '', odometer: '', type: 'Oil & Filter Change', workshop: '', cost: '', notes: '', nextDue: '', nextOdo: '' };
 }
 
-export default function ServiceForm({ data, onChange, onSave }) {
-  const [saved, setSaved] = useState(false);
+export default function ServiceForm({ data, onChange }) {
   const [showForm, setShowForm] = useState(false);
   const [record, setRecord] = useState(empty());
 
@@ -23,25 +22,18 @@ export default function ServiceForm({ data, onChange, onSave }) {
   }
 
   function addRecord() {
-    if (!record.date || !record.type) return;
-    onChange('service', [...data, { ...record, id: Date.now() }]);
+    if (!record.date) return;
+    onChange([...data, { ...record, id: Date.now() }]);
     setRecord(empty());
     setShowForm(false);
-    onSave();
   }
 
   function remove(id) {
-    onChange('service', data.filter((r) => r.id !== id));
-    onSave();
-  }
-
-  function save() {
-    onSave();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    onChange(data.filter((r) => r.id !== id));
   }
 
   const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const totalSpent = data.reduce((sum, r) => sum + (Number(r.cost) || 0), 0);
 
   return (
     <div className="space-y-5">
@@ -49,13 +41,20 @@ export default function ServiceForm({ data, onChange, onSave }) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="bg-orange-100 p-2 rounded-xl"><Wrench className="w-5 h-5 text-orange-700" /></div>
-            <h2 className="text-lg font-bold text-gray-800">Service History</h2>
+            <div>
+              <h2 className="text-lg font-bold text-gray-800">Service History</h2>
+              {totalSpent > 0 && (
+                <p className="text-xs text-gray-500">
+                  {data.length} record{data.length !== 1 ? 's' : ''} · ${totalSpent.toLocaleString()} total
+                </p>
+              )}
+            </div>
           </div>
           <button
             onClick={() => setShowForm((v) => !v)}
-            className="flex items-center gap-1 bg-orange-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-orange-700 transition"
+            className="flex items-center gap-1 bg-orange-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-orange-700 transition shrink-0"
           >
-            <Plus className="w-4 h-4" /> Add Service
+            <Plus className="w-4 h-4" /> Add
           </button>
         </div>
 
@@ -92,7 +91,7 @@ export default function ServiceForm({ data, onChange, onSave }) {
             </div>
             <div className="flex gap-2 mt-3">
               <button onClick={addRecord} className="bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-700 transition">Save Record</button>
-              <button onClick={() => setShowForm(false)} className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition">Cancel</button>
+              <button onClick={() => { setShowForm(false); setRecord(empty()); }} className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition">Cancel</button>
             </div>
           </div>
         )}
@@ -110,7 +109,9 @@ export default function ServiceForm({ data, onChange, onSave }) {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="font-semibold text-gray-900">{r.type}</p>
-                      <p className="text-sm text-gray-500">{r.date}{r.odometer ? ` · ${Number(r.odometer).toLocaleString()} km` : ''}</p>
+                      <p className="text-sm text-gray-500">
+                        {formatDate(r.date)}{r.odometer ? ` · ${Number(r.odometer).toLocaleString()} km` : ''}
+                      </p>
                     </div>
                     {r.cost && <span className="text-sm font-medium text-green-700">${Number(r.cost).toLocaleString()}</span>}
                   </div>
@@ -118,7 +119,9 @@ export default function ServiceForm({ data, onChange, onSave }) {
                   {r.notes && <p className="text-sm text-gray-500 mt-1 italic">{r.notes}</p>}
                   {(r.nextDue || r.nextOdo) && (
                     <p className="text-xs text-orange-600 mt-1 font-medium">
-                      Next: {r.nextDue || ''}{r.nextDue && r.nextOdo ? ' / ' : ''}{r.nextOdo ? `${Number(r.nextOdo).toLocaleString()} km` : ''}
+                      Next: {r.nextDue ? formatDate(r.nextDue) : ''}
+                      {r.nextDue && r.nextOdo ? ' / ' : ''}
+                      {r.nextOdo ? `${Number(r.nextOdo).toLocaleString()} km` : ''}
                     </p>
                   )}
                 </div>
@@ -130,7 +133,6 @@ export default function ServiceForm({ data, onChange, onSave }) {
           </div>
         )}
       </div>
-      {sorted.length > 0 && <SaveButton saved={saved} onClick={save} />}
     </div>
   );
 }

@@ -1,54 +1,25 @@
 import { PROFILE } from '../config/profile';
 
-// Bumped when the shape changes so older saved data doesn't hide new fields.
-const STORAGE_KEY = 'vehicleVault_data_v2';
+// Everything except the service log is hardcoded in the profile, so this is
+// the only thing that needs persisting.
+const SERVICE_KEY = 'vehicleVault_service';
 
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
-
-export function getDefaultData() {
-  return clone(PROFILE);
-}
-
-// Saved values win, but any key missing from storage falls back to the
-// hardcoded profile — so adding a field here doesn't require clearing data.
-function mergeSection(defaults, saved) {
-  if (Array.isArray(defaults)) return Array.isArray(saved) ? saved : defaults;
-  if (!saved || typeof saved !== 'object') return defaults;
-  const out = { ...defaults };
-  for (const [key, value] of Object.entries(saved)) {
-    out[key] = value;
-  }
-  return out;
-}
-
-export function loadData() {
-  const defaults = getDefaultData();
+export function loadService() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return defaults;
-    const saved = JSON.parse(raw);
-    const merged = {};
-    for (const key of Object.keys(defaults)) {
-      merged[key] = mergeSection(defaults[key], saved[key]);
-    }
-    return merged;
+    const raw = localStorage.getItem(SERVICE_KEY);
+    if (!raw) return PROFILE.service || [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return defaults;
+    return [];
   }
 }
 
-export function saveData(data) {
+export function saveService(records) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(SERVICE_KEY, JSON.stringify(records));
     return true;
   } catch {
     return false;
   }
-}
-
-export function resetToProfile() {
-  localStorage.removeItem(STORAGE_KEY);
-  return getDefaultData();
 }

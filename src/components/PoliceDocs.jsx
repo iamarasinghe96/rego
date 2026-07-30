@@ -2,25 +2,19 @@ import { useState, useCallback, useEffect } from 'react';
 import { FileText, ExternalLink } from 'lucide-react';
 import { DOC_SLOTS } from '../config/documents';
 import useRepoDoc from '../hooks/useRepoDoc';
-import useDoc from '../hooks/useDoc';
 
 function DocLink({ slot, onResolve }) {
-  const repo = useRepoDoc(slot.file);
-  const device = useDoc(slot.id);
-
-  // A committed file wins over a device copy — it's the one kept current
-  // in the repo.
-  const href = repo.exists ? repo.url : device.url;
+  const { exists, url } = useRepoDoc(slot.file);
 
   useEffect(() => {
-    onResolve(slot.id, Boolean(href));
-  }, [slot.id, href, onResolve]);
+    onResolve(slot.id, exists);
+  }, [slot.id, exists, onResolve]);
 
-  if (!href) return null;
+  if (!exists) return null;
 
   return (
     <a
-      href={href}
+      href={url}
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition"
