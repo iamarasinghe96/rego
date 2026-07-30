@@ -1,10 +1,13 @@
 import { User } from 'lucide-react';
 import DetailCard, { Detail } from './ui/DetailCard';
+import LicenceButton from './LicenceButton';
 import { formatDate } from '../utils/format';
 
 export default function OwnerView({ data }) {
   return (
     <div className="space-y-5">
+      <LicenceButton />
+
       <DetailCard icon={User} iconClass="bg-blue-100 text-blue-700" title="Driver / Owner">
         {data.photo && (
           <img

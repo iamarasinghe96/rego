@@ -1,5 +1,6 @@
 import { Shield, Car, FileCheck, AlertCircle, Phone, User, ShieldCheck } from 'lucide-react';
 import PoliceDocs from './PoliceDocs';
+import LicenceButton from './LicenceButton';
 import { formatDate } from '../utils/format';
 
 function Row({ label, value }) {
@@ -40,6 +41,9 @@ export default function PoliceView({ data }) {
           <p className="text-blue-400 text-xs mt-1">{now}</p>
         </div>
       </div>
+
+      {/* Opens the official NSW licence in the Service NSW app */}
+      <LicenceButton />
 
       {/* Owner */}
       <section className="bg-white rounded-2xl shadow overflow-hidden">

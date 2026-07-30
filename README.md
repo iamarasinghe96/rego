@@ -48,6 +48,33 @@ hidden until at least one file exists.
 > delete. Registration and insurance documents contain your full name, address,
 > licence number and VIN.
 
+## The "Show my licence" button
+
+The Police Check and Owner screens have a button that opens your real NSW
+Driver Licence in the Service NSW app. Service NSW publishes no URL scheme, so
+the button runs an iOS Shortcut instead:
+
+```
+shortcuts://run-shortcut?name=Show%20driver%20licence
+```
+
+The name in that URL must match the Shortcut on your device **exactly**. It's
+set in [`src/config/shortcuts.js`](src/config/shortcuts.js):
+
+```js
+export const LICENCE_SHORTCUT = {
+  name: 'Show driver licence',   // ← rename here if yours differs
+  ...
+};
+```
+
+The Shortcut itself is a single **Open App → Service NSW** action. Tapping
+"Button not working?" under the button links to the shared copy at
+`icloud.com/shortcuts/88d6c6a293314a8aade3546627173d95`.
+
+Being a Shortcut, it only works on iPhone/iPad — on desktop the button explains
+that instead.
+
 ## Opening it with Siri
 
 Siri can't open a website by name the way it opens the Service NSW app, but a
