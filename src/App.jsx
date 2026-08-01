@@ -11,13 +11,15 @@ import ServiceForm from './components/ServiceForm';
 import MedicalView from './components/MedicalView';
 import './index.css';
 
+// `short` is used in the bottom bar, where six labels share the screen width
+// and anything longer wraps into the home indicator.
 const TABS = [
-  { id: 'police', label: 'Police Check', icon: Shield, color: 'blue' },
-  { id: 'owner', label: 'Owner', icon: User, color: 'slate' },
-  { id: 'vehicle', label: 'Vehicle', icon: Car, color: 'green' },
-  { id: 'insurance', label: 'Insurance', icon: FileCheck, color: 'purple' },
-  { id: 'service', label: 'Service', icon: Wrench, color: 'orange' },
-  { id: 'medical', label: 'Medical', icon: Heart, color: 'red' },
+  { id: 'police', label: 'Police Check', short: 'Police', icon: Shield, color: 'blue' },
+  { id: 'owner', label: 'Owner', short: 'Owner', icon: User, color: 'slate' },
+  { id: 'vehicle', label: 'Vehicle', short: 'Vehicle', icon: Car, color: 'green' },
+  { id: 'insurance', label: 'Insurance', short: 'Insurance', icon: FileCheck, color: 'purple' },
+  { id: 'service', label: 'Service', short: 'Service', icon: Wrench, color: 'orange' },
+  { id: 'medical', label: 'Medical', short: 'Medical', icon: Heart, color: 'red' },
 ];
 
 const COLOR_MAP = {
@@ -81,7 +83,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col">
       {/* Top bar */}
-      <header className="bg-blue-900 text-white px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
+      <header className="safe-header bg-blue-900 text-white px-4 pb-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
         <div className="flex items-center gap-2">
           <Shield className="w-6 h-6 text-blue-300" />
           <span className="font-bold text-lg tracking-tight">VehicleVault</span>
@@ -128,24 +130,26 @@ export default function App() {
       )}
 
       {/* Bottom mobile nav */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 flex z-20 shadow-lg">
-        {TABS.map(({ id, label, icon: Icon, color }) => (
+      <nav className="safe-nav md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 flex z-20 shadow-lg">
+        {TABS.map(({ id, short, icon: Icon, color }) => (
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`flex-1 flex flex-col items-center py-2 text-xs font-medium relative transition ${
+            className={`flex-1 min-w-0 flex flex-col items-center pt-2 pb-1.5 text-[11px] font-medium relative transition ${
               tab === id ? COLOR_MAP[color].icon : 'text-gray-400'
             }`}
           >
-            <Icon className="w-5 h-5 mb-0.5" />
-            <span className={tab === id ? 'font-bold' : ''}>{label}</span>
+            <Icon className="w-5 h-5 mb-0.5 shrink-0" />
+            <span className={`leading-none truncate max-w-full px-0.5 ${tab === id ? 'font-bold' : ''}`}>
+              {short}
+            </span>
             {badgeFor(id) && <span className="absolute top-1 right-1/4 w-2 h-2 bg-amber-400 rounded-full" />}
           </button>
         ))}
       </nav>
 
       {/* Content */}
-      <main className="flex-1 p-4 pb-24 md:pb-8 max-w-2xl mx-auto w-full">
+      <main className="safe-main flex-1 p-4 md:pb-8 max-w-2xl mx-auto w-full">
         {tab === 'police' && <PoliceView data={{ ...PROFILE, service }} />}
         {tab === 'owner' && <OwnerView data={PROFILE.owner} />}
         {tab === 'vehicle' && <VehicleView data={PROFILE.vehicle} />}

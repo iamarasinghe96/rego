@@ -23,3 +23,21 @@ body {
   .no-print { display: none !important; }
   body { background: white; }
 }
+
+/* Installed to the home screen, iOS draws the app under the status bar and
+   the home indicator. These keep content clear of both. The 0px fallback
+   means they collapse to nothing in a normal browser tab. */
+.safe-header {
+  padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+}
+
+.safe-nav {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 767px) {
+  /* Clear the fixed bottom nav plus the home indicator below it. */
+  .safe-main {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
