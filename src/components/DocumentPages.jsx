@@ -4,6 +4,11 @@ import { FileText } from 'lucide-react';
  * Renders each document as inline page images. `variant` picks the framing:
  * "police" matches the dark section headers on the Police Check screen,
  * "card" matches the detail cards elsewhere.
+ *
+ * Pages are painted from CSS background rules rather than <img src>, because
+ * the same document appears on two tabs and inlining the data twice would
+ * double the file size. The build emits one rule per page and both tabs point
+ * at it.
  */
 export default function DocumentPages({
   documents,
@@ -21,12 +26,12 @@ export default function DocumentPages({
             {doc.label}
           </figcaption>
           <div className="space-y-2">
-            {doc.pages.map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt={`${doc.label} — page ${i + 1}`}
-                className="w-full rounded-lg border border-gray-200 bg-white"
+            {doc.pages.map((page, i) => (
+              <div
+                key={page.className}
+                role="img"
+                aria-label={`${doc.label} — page ${i + 1}`}
+                className={`docpage ${page.className} w-full rounded-lg border border-gray-200 bg-white`}
               />
             ))}
           </div>

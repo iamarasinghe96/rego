@@ -29,6 +29,25 @@ function dataUri(path) {
   return `data:${mime};base64,${readFileSync(path).toString('base64')}`;
 }
 
+// Reads the frame header for the intrinsic size, so each page can reserve the
+// right aspect ratio without the image being loaded to measure it.
+function jpegSize(path) {
+  const buf = readFileSync(path);
+  let i = 2;
+  while (i < buf.length - 9) {
+    if (buf[i] !== 0xff) {
+      i++;
+      continue;
+    }
+    const marker = buf[i + 1];
+    const isFrameHeader =
+      marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc;
+    if (isFrameHeader) return { height: buf.readUInt16BE(i + 5), width: buf.readUInt16BE(i + 7) };
+    i += 2 + buf.readUInt16BE(i + 2);
+  }
+  throw new Error(`Could not read dimensions: ${path}`);
+}
+
 // 1. Bundle the renderer for Node.
 await build({
   configFile: false,
@@ -46,9 +65,21 @@ await build({
 
 // 2. Collect the assets that get inlined.
 const ownerPhoto = dataUri(join(ROOT, 'src/assets/owner.jpg'));
+// Each page becomes one CSS rule. The same document is shown on the Police
+// Check tab and on its own tab; emitting the data once and referencing it by
+// class keeps the file from carrying every certificate twice.
+const pageRules = [];
 const documents = DOC_META.map((doc) => ({
   ...doc,
-  pages: doc.files.map((f) => dataUri(join(ROOT, 'src/documents/pages', f))),
+  pages: doc.files.map((file) => {
+    const path = join(ROOT, 'src/documents/pages', file);
+    const className = `docpage-${file.replace(/\.[^.]+$/, '')}`;
+    const { width, height } = jpegSize(path);
+    pageRules.push(
+      `.${className}{background-image:url("${dataUri(path)}");aspect-ratio:${width}/${height}}`
+    );
+    return { className, width, height };
+  }),
 }));
 const builtAt = new Date().toLocaleDateString('en-AU', {
   day: 'numeric',
@@ -66,6 +97,8 @@ const { css } = await postcss([tailwindcss(), autoprefixer()]).process(
   { from: join(ROOT, 'src/index.css'), to: undefined }
 );
 
+const styles = `${css}\n.docpage{background-size:contain;background-repeat:no-repeat;background-position:center}\n${pageRules.join('\n')}`;
+
 const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -79,7 +112,7 @@ const html = `<!doctype html>
 <meta name="apple-mobile-web-app-title" content="VehicleVault">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231e3a8a'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3C/svg%3E">
-<style>${css}</style>
+<style>${styles}</style>
 </head>
 <body>${body}</body>
 </html>
