@@ -1,7 +1,6 @@
 import { ShieldCheck } from 'lucide-react';
 import DetailCard, { Detail } from './ui/DetailCard';
-import DocumentLinks from './DocumentLinks';
-import { slotsFor } from '../config/documents';
+import DocumentPages from './DocumentPages';
 import { formatDate, daysUntil, isExpired } from '../utils/format';
 
 function ExpiryNotice({ label, date }) {
@@ -24,7 +23,7 @@ function ExpiryNotice({ label, date }) {
   return null;
 }
 
-export default function InsuranceView({ ctp }) {
+export default function InsuranceView({ ctp, documents = [] }) {
   return (
     <div className="space-y-5">
       <ExpiryNotice label="CTP green slip" date={ctp.expiryDate} />
@@ -48,7 +47,7 @@ export default function InsuranceView({ ctp }) {
         <Detail label="Injury Claims" value={ctp.assistNumber} />
       </DetailCard>
 
-      <DocumentLinks slots={slotsFor('insurance')} iconClass="bg-purple-100 text-purple-700" />
+      <DocumentPages documents={documents} iconClass="bg-purple-100 text-purple-700" />
     </div>
   );
 }

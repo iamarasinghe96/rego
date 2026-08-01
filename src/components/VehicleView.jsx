@@ -1,10 +1,9 @@
 import { Car } from 'lucide-react';
 import DetailCard, { Detail } from './ui/DetailCard';
-import DocumentLinks from './DocumentLinks';
-import { slotsFor } from '../config/documents';
+import DocumentPages from './DocumentPages';
 import { formatDate } from '../utils/format';
 
-export default function VehicleView({ data }) {
+export default function VehicleView({ data, documents = [] }) {
   return (
     <div className="space-y-5">
       <DetailCard icon={Car} iconClass="bg-green-100 text-green-700" title="Vehicle Details">
@@ -28,7 +27,7 @@ export default function VehicleView({ data }) {
         <Detail label="Garaged At" value={data.garagedAt} />
       </DetailCard>
 
-      <DocumentLinks slots={slotsFor('vehicle')} iconClass="bg-green-100 text-green-700" />
+      <DocumentPages documents={documents} iconClass="bg-green-100 text-green-700" />
     </div>
   );
 }

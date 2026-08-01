@@ -1,39 +1,24 @@
-import registrationPdf from '../documents/registration.pdf';
-import ctpPdf from '../documents/ctp.pdf';
-
-// The PDFs are inlined into the build as base64 data URIs. Safari refuses to
-// navigate to a top-level data: URL, so each one is turned into a blob URL
-// once at startup — that both works and keeps the tap synchronous, which
-// matters because iOS blocks link opens that happen after an await.
-function toBlobUrl(source) {
-  if (typeof source !== 'string' || !source.startsWith('data:')) return source;
-  try {
-    const [meta, base64] = source.split(',');
-    const mime = meta.match(/:(.*?);/)?.[1] || 'application/pdf';
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    return URL.createObjectURL(new Blob([bytes], { type: mime }));
-  } catch {
-    return source;
-  }
-}
-
-export const DOC_SLOTS = [
+// Documents are rasterised to page images at build time and embedded as
+// inline <img> data URIs. iOS previews HTML without running JavaScript, so a
+// PDF can't be opened from a blob URL or fetched — an image is the only form
+// that reliably displays. Pinch-to-zoom still works for reading the fine print.
+//
+// Regenerate the pages with scripts/rasterize.mjs after replacing a PDF.
+export const DOC_META = [
   {
     id: 'registration',
     section: 'vehicle',
-    label: 'Registration Papers',
-    url: toBlobUrl(registrationPdf),
+    label: 'Certificate of Registration',
+    files: ['registration-1.jpg'],
   },
   {
     id: 'ctp',
     section: 'insurance',
-    label: 'CTP / Green Slip',
-    url: toBlobUrl(ctpPdf),
+    label: 'CTP Green Slip Certificate',
+    files: ['ctp-1.jpg', 'ctp-2.jpg'],
   },
 ];
 
-export function slotsFor(section) {
-  return DOC_SLOTS.filter((s) => s.section === section);
+export function documentsFor(documents, section) {
+  return documents.filter((d) => d.section === section);
 }

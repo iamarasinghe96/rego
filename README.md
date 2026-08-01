@@ -4,9 +4,13 @@ Vehicle registration, insurance, service history and medical details in one
 place — with a **Police Check** screen designed to be handed to an officer at a
 roadside stop.
 
-Builds to **one self-contained HTML file** that runs straight off your phone.
-No server, no hosting, no URL, no network access of any kind. Your details
-never leave the device.
+Builds to **one self-contained HTML file with no JavaScript** that runs
+straight off your phone. No server, no hosting, no URL, no network access of
+any kind. Your details never leave the device.
+
+iOS previews local HTML with scripting disabled, so the page is rendered to
+static markup at build time and the tabs are driven by CSS. The build refuses
+to emit a file containing a `<script>` tag or any external reference.
 
 ## Building it
 
@@ -15,9 +19,9 @@ npm install
 npm run build     # → dist/VehicleVault.html  (~2.2 MB)
 ```
 
-Everything is inlined into that one file: the app, your photo, and both PDFs.
-The build fails if anything escapes inlining, so if it succeeds the file is
-guaranteed self-contained.
+Everything is inlined into that one file: the markup, the stylesheet, your
+photo, and every page of both certificates. A successful build is proof the
+file needs neither a network nor a script engine.
 
 ```bash
 npm run dev       # local dev server while editing
@@ -40,16 +44,15 @@ Now the icon opens it, and *“Hey Siri, show my rego”* works.
 
 ### What the Files preview can't do
 
-iOS opens local HTML in a restricted preview, which affects two things:
+Scripting is off there, which costs two things:
 
-- **Service records may not persist** between openings. The Service tab shows a
-  warning when it detects this, so you'll never think a record saved when it
-  didn't. Everything else is baked into the file and always displays.
-- **The "Show my licence" button** may not be able to launch Service NSW,
-  since the preview can block app-launching links.
+- **Service records can't be added in the app.** They're part of the profile
+  now — add them to `service` in `src/config/profile.js` and rebuild.
+- **The "Show my licence" button** may not launch Service NSW, since the
+  preview can block app-launching links. Everything else works.
 
-Both are limitations of opening a file rather than a web page. If they matter,
-hosting the app privately is what fixes them — see *Going back to hosting*.
+Both are consequences of opening a file rather than a web page. Hosting the app
+privately restores them — see *Going back to hosting*.
 
 ## Screens
 
@@ -62,8 +65,8 @@ hosting the app privately is what fixes them — see *Going back to hosting*.
 | **Service**      | Service history with odometer, workshop, cost, next-service tracking        |
 | **Medical**      | Blood type, allergies, conditions, medications, medical certificates        |
 
-Every tab is read-only except **Service**. Expiring or expired documents raise
-an amber dot on the relevant tab.
+Every tab is read-only. Expiring or expired documents raise an amber dot on
+the relevant tab.
 
 ## Changing your details
 
@@ -71,15 +74,22 @@ Everything lives in [`src/config/profile.js`](src/config/profile.js) — driver,
 vehicle, CTP and medical. Edit it, run `npm run build`, and copy the new file
 to your phone.
 
-Documents live in `src/documents/` and are embedded at build time:
+Documents live in `src/documents/`. Because the file runs without scripting,
+PDFs are rasterised to page images that display inline — the officer sees the
+certificate itself, and pinch-to-zoom reads the fine print.
 
-| File               | Appears as          |
-| ------------------ | ------------------- |
-| `registration.pdf` | Registration Papers |
-| `ctp.pdf`          | CTP / Green Slip    |
+| PDF                | Appears as                  |
+| ------------------ | --------------------------- |
+| `registration.pdf` | Certificate of Registration |
+| `ctp.pdf`          | CTP Green Slip Certificate  |
 
-To add another, drop the PDF in that folder and add an entry to
-[`src/config/documents.js`](src/config/documents.js).
+After replacing a PDF, regenerate its images and list them in
+[`src/config/documents.js`](src/config/documents.js):
+
+```bash
+npm i --no-save playwright-core pdfjs-dist@4.10.38
+node scripts/rasterize.mjs
+```
 
 Your photo is `src/assets/owner.jpg`.
 

@@ -24,6 +24,68 @@ body {
   body { background: white; }
 }
 
+/* ---------------------------------------------------------------------------
+   Tabs without JavaScript.
+
+   iOS previews local HTML files with scripting disabled, so navigation is a
+   set of hidden radio inputs driven by <label> taps. The inputs sit before
+   the header, nav and panels so the general sibling combinator can reach
+   them. Purely declarative — it works with scripts off.
+   --------------------------------------------------------------------------- */
+.tab-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.panel {
+  display: none;
+}
+
+#t-police:checked ~ main .panel-police,
+#t-owner:checked ~ main .panel-owner,
+#t-vehicle:checked ~ main .panel-vehicle,
+#t-insurance:checked ~ main .panel-insurance,
+#t-service:checked ~ main .panel-service,
+#t-medical:checked ~ main .panel-medical {
+  display: block;
+}
+
+/* Selected item in the bottom bar takes its own accent colour. */
+#t-police:checked ~ .bottom-nav label[for='t-police'],
+#t-owner:checked ~ .bottom-nav label[for='t-owner'],
+#t-vehicle:checked ~ .bottom-nav label[for='t-vehicle'],
+#t-insurance:checked ~ .bottom-nav label[for='t-insurance'],
+#t-service:checked ~ .bottom-nav label[for='t-service'],
+#t-medical:checked ~ .bottom-nav label[for='t-medical'] {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Selected item in the desktop header becomes a filled pill. */
+#t-police:checked ~ header label[for='t-police'],
+#t-owner:checked ~ header label[for='t-owner'],
+#t-vehicle:checked ~ header label[for='t-vehicle'],
+#t-insurance:checked ~ header label[for='t-insurance'],
+#t-service:checked ~ header label[for='t-service'],
+#t-medical:checked ~ header label[for='t-medical'] {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Keyboard focus still needs to be visible when the input itself is hidden. */
+.tab-input:focus-visible ~ .bottom-nav label[for],
+.tab-input:focus-visible ~ header label[for] {
+  outline: 2px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
 /* Installed to the home screen, iOS draws the app under the status bar and
    the home indicator. These keep content clear of both. The 0px fallback
    means they collapse to nothing in a normal browser tab. */

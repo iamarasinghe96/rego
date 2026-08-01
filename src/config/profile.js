@@ -1,16 +1,13 @@
 // ---------------------------------------------------------------------------
 // Personal details, baked into the app as the initial data.
 //
-// ⚠️  This file is committed to a public repo and deployed to a public URL.
-//     Everything below is readable by anyone. To pull it back out, blank the
-//     values here (the app falls back to empty fields) and rewrite git history
-//     — deleting the file alone leaves it in every past commit.
+// The built VehicleVault.html is local-only and never leaves your device,
+// but this source file still lives in git history — see the README if the
+// repo was ever public.
 //
 // Sources: NSW Driver Licence, NSW Certificate of Registration (rec.
 // 0458634981), Allianz CTP Green Slip (policy 7555568760TP).
 // ---------------------------------------------------------------------------
-
-import ownerPhoto from '../assets/owner.jpg';
 
 export const PROFILE = {
   owner: {
@@ -23,7 +20,7 @@ export const PROFILE = {
     address: 'Unit 7, 634 Loma Pl, Albury NSW 2640',
     phone: '',
     email: '',
-    photo: ownerPhoto,
+    photo: '', // injected at build time from src/assets/owner.jpg
   },
 
   vehicle: {
@@ -32,8 +29,9 @@ export const PROFILE = {
     year: '2011',
     color: '',
     vin: 'JM0DE10Y2B0204909',
-    engineNumber: 'ZY50550',
+    engineNumber: 'ZY750550',
     engineCapacity: '1498 cc (1.5L)',
+    tareWeight: '1005 kg',
     seatingCapacity: '5',
     registrationNumber: 'DQ13XH',
     registrationExpiry: '2027-02-26',

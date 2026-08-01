@@ -1,7 +1,6 @@
 import { Shield, Car, AlertCircle, Phone, User, ShieldCheck } from 'lucide-react';
-import DocumentLinks from './DocumentLinks';
+import DocumentPages from './DocumentPages';
 import LicenceButton from './LicenceButton';
-import { DOC_SLOTS } from '../config/documents';
 import { formatDate } from '../utils/format';
 
 function Row({ label, value }) {
@@ -14,9 +13,8 @@ function Row({ label, value }) {
   );
 }
 
-export default function PoliceView({ data }) {
+export default function PoliceView({ data, documents = [], builtAt = '' }) {
   const { owner, vehicle, ctp, medical } = data;
-  const now = new Date().toLocaleString('en-AU', { dateStyle: 'full', timeStyle: 'short' });
 
   const hasMedical =
     medical.bloodType ||
@@ -39,7 +37,7 @@ export default function PoliceView({ data }) {
         <div>
           <h1 className="text-xl font-bold tracking-wide">VEHICLE IDENTIFICATION</h1>
           <p className="text-blue-300 text-sm">For law enforcement &amp; official use</p>
-          <p className="text-blue-400 text-xs mt-1">{now}</p>
+          {builtAt && <p className="text-blue-400 text-xs mt-1">Details as at {builtAt}</p>}
         </div>
       </div>
 
@@ -121,7 +119,7 @@ export default function PoliceView({ data }) {
       )}
 
       {/* Documents */}
-      <DocumentLinks slots={DOC_SLOTS} variant="police" />
+      <DocumentPages documents={documents} variant="police" />
 
       {/* Medical */}
       {hasMedical && (
