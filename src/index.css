@@ -90,16 +90,26 @@ details > summary::-webkit-details-marker {
    the home indicator. These keep content clear of both. The 0px fallback
    means they collapse to nothing in a normal browser tab. */
 .safe-header {
-  padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+  padding-top: 0.75rem;
 }
 
+/* Only an installed home-screen app draws under the status bar. The Files
+   preview reports a large top inset for its own toolbar, and honouring it
+   there leaves a tall empty band above the title. */
+@media (display-mode: standalone) {
+  .safe-header {
+    padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+  }
+}
+
+/* Capped, so an oversized reported inset can't strand the nav mid-screen. */
 .safe-nav {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: min(env(safe-area-inset-bottom, 0px), 34px);
 }
 
 @media (max-width: 767px) {
   /* Clear the fixed bottom nav plus the home indicator below it. */
   .safe-main {
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(5rem + min(env(safe-area-inset-bottom, 0px), 34px));
   }
 }
