@@ -110,6 +110,6 @@ details > summary::-webkit-details-marker {
 @media (max-width: 767px) {
   /* Clear the fixed bottom nav plus the home indicator below it. */
   .safe-main {
-    padding-bottom: calc(5rem + min(env(safe-area-inset-bottom, 0px), 34px));
+    padding-bottom: calc(4rem + min(env(safe-area-inset-bottom, 0px), 34px));
   }
 }

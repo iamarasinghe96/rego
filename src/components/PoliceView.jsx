@@ -30,7 +30,7 @@ export default function PoliceView({ data, documents = [], builtAt = '' }) {
     vehicle.registeredOperator.trim().toLowerCase() !== owner.fullName.trim().toLowerCase();
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4 pb-10">
+    <div className="max-w-2xl mx-auto space-y-4">
       {/* Header */}
       <div className="bg-blue-900 text-white rounded-2xl p-5 flex items-center gap-4 shadow-lg">
         <Shield className="w-10 h-10 text-blue-300 shrink-0" />
